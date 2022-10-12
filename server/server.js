@@ -1,6 +1,7 @@
 const express = require("express");
 // import ApolloServer
 const { ApolloServer } = require("apollo-server-express");
+const { authMiddleware } = require("./utils/auth");
 
 // import our typeDefs and resolvers
 const { typeDefs, resolvers } = require("./schemas");
@@ -11,6 +12,12 @@ const PORT = process.env.PORT || 3001;
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  // pass in a context method that's set to return whatever you want available in the resolvers.
+  // This would see the incoming request and return only the headers
+  // On the resolver side, those headers would become the context parameter.
+
+  // setting "context: authMiddleware" ensures that every request performs an authentication check, and the updated request object will be passed to the resolvers as the context
+  context: authMiddleware,
 });
 
 const app = express();
