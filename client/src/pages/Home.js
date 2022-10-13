@@ -3,6 +3,7 @@ import { useQuery } from "@apollo/client";
 import { QUERY_THOUGHTS, QUERY_ME_BASIC } from "../utils/queries";
 import ThoughtList from "../components/ThoughtList";
 import FriendList from "../components/FriendList";
+import ThoughtForm from "../components/ThoughtForm";
 
 import Auth from "../utils/auth";
 
@@ -24,6 +25,12 @@ const Home = () => {
   return (
     <main>
       <div className="flex-row justify-space-between">
+        {/* ThoughtForm component will only render for logged in users */}
+        {loggedIn && (
+          <div className="col-12 mb-3">
+            <ThoughtForm />
+          </div>
+        )}
         <div className={`col-12 mb-3 ${loggedIn && "col-lg-8"}`}>
           {/* If the query hasn't completed and loading is still defined, we display a message to indicate just that */}
           {/* Once the query is complete and loading is undefined, we pass the thoughts array and a custom title to the <ThoughtList> component as props */}
