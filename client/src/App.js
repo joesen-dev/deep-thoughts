@@ -11,6 +11,8 @@ import {
   createHttpLink,
 } from "@apollo/client";
 
+import { setContext } from "@apollo/client/link/context";
+
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 
@@ -41,9 +43,25 @@ const httpLink = createHttpLink({
   // Now the HTTP requests will work in both development and production environments!
 });
 
+// we're not using the first parameter,
+// but we still need to access the second one,
+// we can use an underscore _ to serve as a placeholder for the first parameter.
+const authLink = setContext((_, { headers }) => {
+  const token = localStorage.getItem("id_token");
+  return {
+    // set the HTTP request headers of every request to include the token
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : "",
+    },
+  };
+});
+
 // use the ApolloClient() constructor to instantiate the Apollo Client instance and create the connection to the API endpoint
 const client = new ApolloClient({
-  link: httpLink,
+  // combine the authLink and httpLink objects so that every request retrieves the token and
+  // sets the request headers before making the request to the API
+  link: authLink.concat(httpLink),
   // instantiate a new cache object using new InMemoryCache()
   cache: new InMemoryCache(),
 });
